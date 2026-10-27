@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Z Library</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#6b6b6b;--card:#f7f4ed;--bd:#e6dcc6;--teal:#C9962B;--amber:#C9962B;--on:#2C2A26;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1a17;--fg:#f0ede6;--mut:#a39d90;--card:#2C2A26;--bd:#4a4538;--teal:#C9962B;--on:#1c1a17}}
+:root[data-theme="dark"]{--bg:#1c1a17;--fg:#f0ede6;--mut:#a39d90;--card:#2C2A26;--bd:#4a4538;--teal:#C9962B;--on:#1c1a17}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 "Segoe UI",Tahoma,Arial,sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px}
+header{text-align:center;padding:12px 0 16px;border-bottom:1px solid var(--bd);margin-bottom:20px}
+h1{margin:0;font-size:34px;font-weight:700;direction:ltr;font-family:Georgia,"Times New Roman",serif}
+h1 b{color:var(--teal);font-weight:500}
+h2{font-size:18px;font-weight:500;margin:20px 0 10px}
+.sub{color:var(--mut);font-size:14px;margin:4px 0 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
+input[type=text],input[type=email],input[type=password],textarea,select{width:100%;padding:10px 12px;margin:0 0 10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit}
+textarea{min-height:70px;resize:vertical}
+button,.btn{display:inline-block;background:var(--teal);color:var(--on);border:0;border-radius:8px;padding:9px 16px;font:inherit;cursor:pointer;text-decoration:none;font-weight:600;text-align:center}
+button:hover,.btn:hover{opacity:0.9}
+button.ghost{background:none;color:var(--mut);border:1px solid var(--bd);padding:5px 10px;font-size:13px;font-weight:normal}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.tag{font-size:12px;padding:2px 10px;border-radius:99px;background:var(--bd);color:var(--mut)}
+.tag.ok{background:var(--teal);color:var(--on)}
+.note{font-size:13px;color:var(--mut);margin:6px 0}
+.empty{color:var(--mut);text-align:center;padding:18px}
+label.up{display:inline-block;border:1px dashed var(--teal);color:var(--fg);border-radius:8px;padding:5px 12px;font-size:14px;cursor:pointer}
+label.up input{display:none}
+#err{color:#c0392b;font-size:14px;min-height:20px;text-align:center;margin-bottom:10px;font-weight:bold}
+.user-bar{display:flex;justify-content:space-between;align-items:center;background:var(--card);padding:10px 14px;border-radius:8px;border:1px solid var(--bd);margin-bottom:20px}
+.tabs{display:flex;gap:10px;margin-bottom:15px;border-bottom:1px solid var(--bd);padding-bottom:10px}
+.tab-btn{background:none;border:none;color:var(--mut);padding:6px 12px;cursor:pointer;font-size:15px}
+.tab-btn.active{color:var(--teal);font-weight:bold;border-bottom:2px solid var(--teal)}
+.auth-box{max-width:400px;margin:30px auto}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1><b>Z</b> Library</h1>
+  <p class="sub">المكتبة الإلكترونية الشاملة والطلبات الخاصة</p>
+</header>
+
+<div id="err"></div>
+
+<!-- شاشة تسجيل الدخول وإنشاء الحساب -->
+<section id="authSec" class="auth-box">
+  <div class="tabs">
+    <button class="tab-btn active" id="tabLogin">تسجيل الدخول</button>
+    <button class="tab-btn" id="tabReg">حساب جديد</button>
+  </div>
+  
+  <form id="fLogin">
+    <input type="email" id="lEmail" placeholder="البريد الإلكتروني" required>
+    <input type="password" id="lPass" placeholder="كلمة المرور" required>
+    <button type="submit" style="width:100%">دخول</button>
+  </form>
+
+  <form id="fReg" hidden>
+    <input type="text" id="rName" placeholder="الاسم الكامل" required>
+    <input type="email" id="rEmail" placeholder="البريد الإلكتروني" required>
+    <input type="password" id="rPass" placeholder="كلمة المرور" required>
+    <select id="rRole">
+      <option value="student">طالب / مستخدم عادي</option>
+      <option value="admin">مدير (طلب صلاحية)</option>
+    </select>
+    <button type="submit" style="width:100%">إنشاء الحساب</button>
+  </form>
+</section>
+
+<!-- شاشة الموقع الرئيسية -->
+<section id="appSec" hidden>
+  <div class="user-bar">
+    <div>مرحباً، <strong id="uName"></strong> <span class="tag" id="uRole"></span></div>
+    <button class="ghost" id="btnLogout">تسجيل الخروج</button>
+  </div>
+
+  <section id="admin" hidden>
+    <h2>لوحة الإدارة: رفع ملف جديد</h2>
+    <div class="card">
+      <input type="text" id="aT" placeholder="عنوان الكتاب أو البحث">
+      <input type="text" id="aA" placeholder="المؤلف أو الباحث">
+      <select id="aK"><option value="كتاب">كتاب</option><option value="بحث">بحث</option></select>
+      <input type="file" id="aF" accept=".pdf,.epub,.doc,.docx,.txt">
+      <label class="note"><input type="checkbox" id="rights" checked> أؤكد أن لدي حق مشاركة هذا الملف.</label>
+      <button id="aGo">رفع إلى المكتبة</button>
+    </div>
+  </section>
+
+  <h2>المكتبة العامة</h2>
+  <input type="text" id="q" placeholder="ابحث بالعنوان أو المؤلف...">
+  <div id="books"><div class="empty">جارٍ التحميل...</div></div>
+
+  <div class="stu">
+    <h2>اطلب كتاباً أو بحثاً</h2>
+    <div class="card">
+      <input type="text" id="rT" placeholder="عنوان الكتاب أو البحث المطلوب">
+      <textarea id="rN" placeholder="تفاصيل إضافية: اسم المؤلف، الطبعة، سنة النشر..."></textarea>
+      <button id="rGo">إرسال الطلب</button>
+    </div>
+
+    <h2>طلباتي الخاصة</h2>
+    <p class="note">طلباتك والرسائل والملفات التي توصلك تظهر لك فقط.</p>
+    <div id="mine"><div class="empty">جارٍ التحميل...</div></div>
+  </div>
+
+  <section id="inbox" hidden>
+    <h2>إدارة طلبات المستخدمين</h2>
+    <div id="all"><div class="empty">لا توجد طلبات</div></div>
+  </section>
+</section>
+</main>
+
+<script>
+const ADMIN_EMAIL = 'aliabobaker44@gmail.com';
+const ADMIN_PASS = '2004.baker';
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const say = m => { $('err').textContent = m || ''; };
+
+function initStorage() {
+  if (!localStorage.getItem('z_users')) {
+    const users = [{ name: 'مدير الموقع', email: ADMIN_EMAIL, pass: ADMIN_PASS, role: 'admin' }];
+    localStorage.setItem('z_users', JSON.stringify(users));
+  } else {
+    let users = JSON.parse(localStorage.getItem('z_users'));
+    let adminFound = users.find(u => u.email === ADMIN_EMAIL);
+    if (adminFound) {
+      adminFound.pass = ADMIN_PASS;
+      adminFound.role = 'admin';
+    } else {
+      users.push({ name: 'مدير الموقع', email: ADMIN_EMAIL, pass: ADMIN_PASS, role: 'admin' });
+    }
+    localStorage.setItem('z_users', JSON.stringify(users));
+  }
+  if (!localStorage.getItem('z_books')) localStorage.setItem('z_books', JSON.stringify([]));
+  if (!localStorage.getItem('z_inbox')) localStorage.setItem('z_inbox', JSON.stringify([]));
+}
+initStorage();
+
+let currentUser = JSON.parse(sessionStorage.getItem('z_curr_user')) || null;
+
+function saveBooks(data) { localStorage.setItem('z_books', JSON.stringify(data)); }
+function getBooks() { return JSON.parse(localStorage.getItem('z_books')) || []; }
+function saveInbox(data) { localStorage.setItem('z_inbox', JSON.stringify(data)); }
+function getInbox() { return JSON.parse(localStorage.getItem('z_inbox')) || []; }
+
+$('tabLogin').onclick = () => {
+  $('tabLogin').classList.add('active'); $('tabReg').classList.remove('active');
+  $('fLogin').hidden = false; $('fReg').hidden = true; say('');
+};
+$('tabReg').onclick = () => {
+  $('tabReg').classList.add('active'); $('tabLogin').classList.remove('active');
+  $('fReg').hidden = false; $('fLogin').hidden = true; say('');
+};
+
+$('fReg').onsubmit = (e) => {
+  e.preventDefault();
+  const name = $('rName').value.trim(), email = $('rEmail').value.trim().toLowerCase(), pass = $('rPass').value, role = $('rRole').value;
+  let users = JSON.parse(localStorage.getItem('z_users')) || [];
+  if (users.find(u => u.email === email)) { say('هذا البريد الإلكتروني مسجل بالفعل'); return; }
+  const newUser = { name, email, pass, role };
+  users.push(newUser);
+  localStorage.setItem('z_users', JSON.stringify(users));
+  currentUser = newUser;
+  sessionStorage.setItem('z_curr_user', JSON.stringify(currentUser));
+  say(''); renderApp();
+};
+
+$('fLogin').onsubmit = (e) => {
+  e.preventDefault();
+  const email = $('lEmail').value.trim().toLowerCase(), pass = $('lPass').value;
+  let users = JSON.parse(localStorage.getItem('z_users')) || [];
+  const user = users.find(u => u.email === email && u.pass === pass);
+  if (!user) { say('البريد الإلكتروني أو كلمة المرور غير صحيحة'); return; }
+  currentUser = user;
+  sessionStorage.setItem('z_curr_user', JSON.stringify(currentUser));
+  say(''); renderApp();
+};
+
+$('btnLogout').onclick = () => {
+  currentUser = null;
+  sessionStorage.removeItem('z_curr_user');
+  renderApp();
+};
+
+function renderApp() {
+  if (!currentUser) {
+    $('authSec').hidden = false; $('appSec').hidden = true;
+    return;
+  }
+  $('authSec').hidden = true; $('appSec').hidden = false;
+  $('uName').textContent = currentUser.name;
+  const isAdmin = currentUser.role === 'admin' || currentUser.email === ADMIN_EMAIL;
+  $('uRole').textContent = isAdmin ? 'مدير' : 'طالب';
+  $('admin').hidden = !isAdmin;
+  $('inbox').hidden = !isAdmin;
+  document.querySelectorAll('.stu').forEach(el => el.hidden = isAdmin);
+  drawBooks();
+  if (isAdmin) drawAllRequests(); else drawMineRequests();
+}
+
+function drawBooks() {
+  const q = $('q').value.trim().toLowerCase();
+  const books = getBooks();
+  const list = books.filter(b => !q || (b.title + ' ' + (b.author || '')).toLowerCase().includes(q));
+  const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.email === ADMIN_EMAIL);
+  $('books').innerHTML = list.length ? list.map(b => `
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="t">${esc(b.title)}</div>
+          <div class="note">${esc(b.author || '')} <span class="tag">${esc(b.kind || 'كتاب')}</span></div>
+        </div>
+        <div>
+          <a class="btn" href="${esc(b.url)}" target="_blank" download="${esc(b.title)}">تحميل</a>
+          ${isAdmin ? `<button class="ghost" onclick="delBook('${b.id}')">حذف</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('') : '<div class="empty">لا توجد ملفات حالياً</div>';
+}
+
+window.delBook = function(id) {
+  let books = getBooks().filter(b => b.id !== id);
+  saveBooks(books); drawBooks();
+};
+
+$('aGo').onclick = () => {
+  const t = $('aT').value.trim(), a = $('aA').value.trim(), k = $('aK').value, f = $('aF').files[0];
+  if (!t || !f) { say('يرجى كتابة العنوان واختيار الملف'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const books = getBooks();
+    books.unshift({ id: Date.now().toString(36), title: t, author: a, kind: k, url: e.target.result, createdAt: Date.now() });
+    saveBooks(books);
+    $('aT').value = ''; $('aA').value = ''; $('aF').value = ''; say(''); drawBooks();
+  };
+  reader.readAsDataURL(f);
+};
+
+$('rGo').onclick = () => {
+  const t = $('rT').value.trim(), n = $('rN').value.trim();
+  if (!t) { say('يرجى كتابة عنوان الكتاب أو البحث'); return; }
+  let inbox = getInbox();
+  let userReqs = inbox.find(i => i.uid === currentUser.email);
+  if (!userReqs) { userReqs = { uid: currentUser.email, uName: currentUser.name, items: [] }; inbox.push(userReqs); }
+  userReqs.items.unshift({ id: Date.now().toString(36), title: t, note: n, status: 'open', createdAt: Date.now(), msgs: [] });
+  saveInbox(inbox);
+  $('rT').value = ''; $('rN').value = ''; say(''); drawMineRequests();
+};
+
+function drawMineRequests() {
+  const inbox = getInbox();
+  const userReqs = inbox.find(i => i.uid === currentUser.email);
+  const items = userReqs ? userReqs.items : [];
+  $('mine').innerHTML = items.length ? items.map(r => cardReq(r, currentUser.email, false)).join('') : '<div class="empty">لم ترسل أي طلب بعد</div>';
+}
+
+function drawAllRequests() {
+  const inbox = getInbox();
+  let list = [];
+  inbox.forEach(u => u.items.forEach(i => list.push(Object.assign({ uid: u.uid, uName: u.uName }, i))));
+  list.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+  $('all').innerHTML = list.length ? list.map(r => cardReq(r, r.uid, true)).join('') : '<div class="empty">لا توجد طلبات بعد</div>';
+}
+
+function cardReq(r, uid, isAdminView) {
+  const done = r.status === 'done', k = uid + '|' + r.id;
+  const msgs = (r.msgs || []).map(m => `<div class="note"><b>${m.from === 'admin' ? 'الإدارة' : 'المستخدم'}:</b> ${esc(m.text)}</div>`).join('');
+  let act = '';
+  if (done && r.url) act = `<a class="btn" href="${esc(r.url)}" download target="_blank">تحميل الملف</a>`;
+  else if (isAdminView) act = `<label class="up">رفع الملف للمستفيد<input type="file" onchange="uploadForReq(event, '${esc(k)}')"></label>`;
+  return `
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="t">${esc(r.title)} ${isAdminView ? `<span class="tag">${esc(r.uName || uid)}</span>` : ''}</div>
+          ${r.note ? `<div class="note">${esc(r.note)}</div>` : ''}
+        </div>
+        <div>
+          <span class="tag ${done ? 'ok' : ''}">${done ? 'تم التوفير' : 'قيد الانتظار'}</span> ${act}
+        </div>
+      </div>
+      ${msgs}
+      <div class="row" style="margin-top:8px">
+        <input type="text" id="m_${esc(k)}" placeholder="اكتب رسالة..." style="flex:1;margin:0">
+        <button class="ghost" onclick="sendMsg('${esc(k)}')">إرسال</button>
+      </div>
+    </div>
+  `;
+}
+
+window.uploadForReq = function(e, key) {
+  const file = e.target.files[0]; if (!file) return;
+  const [uid, reqId] = key.split('|');
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    let inbox = getInbox();
+    let u = inbox.find(i => i.uid === uid);
+    if (u) {
+      let r = u.items.find(item => item.id === reqId);
+      if (r) { r.status = 'done'; r.url = evt.target.result; saveInbox(inbox); renderApp(); }
+    }
+  };
+  reader.readAsDataURL(file);
+};
+
+window.sendMsg = function(key) {
+  const [uid, reqId] = key.split('|');
+  const inp = $('m_' + key), text = inp ? inp.value.trim() : '';
+  if (!text) return;
+  const isAdmin = currentUser.role === 'admin' || currentUser.email === ADMIN_EMAIL;
+  let inbox = getInbox();
+  let u = inbox.find(i => i.uid === uid);
+  if (u) {
+    let r = u.items.find(item => item.id === reqId);
+    if (r) {
+      if (!r.msgs) r.msgs = [];
+      r.msgs.push({ from: isAdmin ? 'admin' : 'user', text, at: Date.now() });
+      saveInbox(inbox); renderApp();
+    }
+  }
+};
+
+$('q').oninput = drawBooks;
+renderApp();
+</script>
+</body>
+</html>
