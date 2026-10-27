@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Z Library - Vector Studio Design</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
+:root {
+  --bg: #fcfbfa;
+  --fg: #2d2b28;
+  --mut: #8c857b;
+  --card: #ffffff;
+  --bd: #ede6dc;
+  --teal: #d4a337;
+  --teal-hover: #b88a2a;
+  --accent-soft: #fbf6ec;
+  --on: #ffffff;
+  --shadow: 0 10px 30px -10px rgba(130, 110, 80, 0.08);
+  --radius: 16px;
+}
+
+:root[data-theme="dark"] {
+  --bg: #141311;
+  --fg: #f4f1ea;
+  --mut: #9c9589;
+  --card: #1c1a17;
+  --bd: #2d2b26;
+  --teal: #e0b041;
+  --teal-hover: #f0c052;
+  --accent-soft: #25221d;
+  --on: #141311;
+  --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Cairo', sans-serif;
+  transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-x: hidden;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  animation: canvasFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes canvasFadeIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.99); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  animation: slideDown 0.5s ease;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logo-area { text-align: center; flex: 1; }
+h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  direction: ltr;
+  letter-spacing: -0.5px;
+  font-family: 'Georgia', serif;
+}
+h1 b { color: var(--teal); font-weight: 700; }
+h2 { font-size: 18px; font-weight: 700; margin: 20px 0 12px; color: var(--teal); }
+.sub { color: var(--mut); font-size: 12px; margin: 2px 0 0; font-weight: 600; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; width: 4px; height: 100%;
+  background: var(--teal);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-4px) scale(1.005);
+  box-shadow: 0 15px 35px -10px rgba(212, 163, 55, 0.15);
+  border-color: var(--teal);
+}
+.card:hover::before { opacity: 1; }
+
+input[type=text], input[type=email], input[type=password], textarea, select {
+  width: 100%;
+  padding: 12px 16px;
+  margin: 0 0 12px;
+  border: 2px solid var(--bd);
+  border-radius: 12px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px rgba(212, 163, 55, 0.15);
+  background: var(--card);
+}
+textarea { min-height: 80px; resize: vertical; }
+
+button, .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--teal);
+  color: var(--on);
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(212, 163, 55, 0.3);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+button:active, .btn:active { transform: scale(0.95); }
+button:hover, .btn:hover {
+  background: var(--teal-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 163, 55, 0.4);
+}
+button.ghost {
+  background: var(--accent-soft);
+  color: var(--fg);
+  border: 1px solid var(--bd);
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: none;
+}
+button.ghost:hover {
+  background: var(--teal);
+  color: var(--on);
+  border-color: var(--teal);
+  box-shadow: 0 4px 12px rgba(212, 163, 55, 0.2);
+}
+
+.row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.tag { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: var(--accent-soft); color: var(--mut); border: 1px solid var(--bd); }
+.tag.ok { background: rgba(46, 204, 113, 0.12); color: #27ae60; border-color: rgba(46, 204, 113, 0.3); }
+.tag.badge { background: #e74c3c; color: #fff; font-weight: 900; border: none; animation: pulse 1.5s infinite; }
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.note { font-size: 12px; color: var(--mut); margin: 6px 0; font-weight: 600; }
+.empty { color: var(--mut); text-align: center; padding: 24px; font-weight: 600; }
+
+/* Drag & Drop Zone */
+.drop-zone {
+  border: 2px dashed var(--teal);
+  background: var(--accent-soft);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+}
+.drop-zone.dragover { background: rgba(212, 163, 55, 0.15); border-color: var(--teal-hover); transform: scale(1.01); }
+.drop-zone input { display: none; }
+
+#err { color: #e74c3c; font-size: 13px; min-height: 20px; text-align: center; margin-bottom: 12px; font-weight: 700; }
+
+.user-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--card); padding: 14px 20px; border-radius: var(--radius);
+  border: 1px solid var(--bd); margin-bottom: 24px; box-shadow: var(--shadow);
+}
+.tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--bd); padding-bottom: 8px; }
+.tab-btn { background: none; border: none; color: var(--mut); padding: 8px 16px; cursor: pointer; font-size: 15px; font-weight: 700; border-radius: 8px; transition: all 0.3s ease; }
+.tab-btn.active { color: var(--on); background: var(--teal); box-shadow: 0 4px 12px rgba(212, 163, 55, 0.3); }
+
+.auth-box { max-width: 420px; margin: 40px auto; background: var(--card); padding: 32px; border-radius: var(--radius); border: 1px solid var(--bd); box-shadow: var(--shadow); }
+.chat-box { background: var(--bg); border: 1px solid var(--bd); border-radius: 12px; padding: 10px; margin: 10px 0; max-height: 160px; overflow-y: auto; }
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--bg); border: 1px solid var(--bd); border-radius: 12px; padding: 14px; text-align: center; transition: transform 0.3s ease; }
+.stat-card:hover { transform: translateY(-3px); border-color: var(--teal); }
+.stat-num { font-size: 22px; font-weight: 900; color: var(--teal); }
+.stat-label { font-size: 11px; color: var(--mut); font-weight: 700; margin-top: 4px; }
+
+.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 6px; }
+.filter-btn { background: var(--card); border: 1px solid var(--bd); color: var(--mut); padding: 6px 16px; border-radius: 99px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.3s ease; }
+.filter-btn.active { background: var(--teal); color: var(--on); border-color: var(--teal); box-shadow: 0 4px 12px rgba(212, 163, 55, 0.3); }
+
+.star-rating { color: #f39c12; cursor: pointer; font-size: 16px; transition: transform 0.2s; }
+.star-rating:hover { transform: scale(1.2); }
+
+/* Timeline Status Bar */
+.timeline { display: flex; align-items: center; justify-content: space-between; margin: 10px 0; position: relative; font-size: 11px; font-weight: 700; color: var(--mut); }
+.timeline::before { content: ''; position: absolute; top: 50%; left: 10px; right: 10px; height: 2px; background: var(--bd); z-index: 1; transform: translateY(-50%); }
+.t-step { position: relative; z-index: 2; background: var(--card); padding: 2px 8px; border-radius: 99px; border: 1px solid var(--bd); }
+.t-step.active { background: var(--teal); color: var(--on); border-color: var(--teal); }
+
+@media (min-width: 900px) {
+  .dashboard-layout { display: grid; grid-template-columns: 360px 1fr; gap: 24px; align-items: start; }
+  .sidebar-pane { position: sticky; top: 24px; }
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div style="width:40px"></div>
+  <div class="logo-area">
+    <h1><b>Z</b> Library</h1>
+    <p class="sub">استوديو الكتب الذكي وتتبع الطلبات الأكاديمية</p>
+  </div>
+  <button class="ghost" id="themeToggle" title="تبديل الوضع">🌙</button>
+</header>
+
+<div id="err"></div>
+
+<section id="authSec" class="auth-box">
+  <div class="tabs">
+    <button class="tab-btn active" id="tabLogin">تسجيل الدخول</button>
+    <button class="tab-btn" id="tabReg">حساب طالب جديد</button>
+  </div>
+  
+  <form id="fLogin">
+    <input type="email" id="lEmail" placeholder="البريد الإلكتروني" required>
+    <input type="password" id="lPass" placeholder="كلمة المرور" required>
+    <button type="submit" style="width:100%">دخول الاستوديو</button>
+  </form>
+
+  <form id="fReg" hidden>
+    <input type="text" id="rName" placeholder="الاسم الكامل" required>
+    <input type="email" id="rEmail" placeholder="البريد الإلكتروني" required>
+    <input type="password" id="rPass" placeholder="كلمة المرور" required>
+    <button type="submit" style="width:100%">إنشاء حساب طالب</button>
+  </form>
+</section>
+
+<section id="appSec" hidden>
+  <div class="user-bar">
+    <div>مرحباً بك، <strong id="uName"></strong> <span class="tag" id="uRole"></span></div>
+    <button class="ghost" id="btnLogout">تسجيل الخروج</button>
+  </div>
+
+  <div class="dashboard-layout">
+    <div class="sidebar-pane">
+      <section id="admin" hidden>
+        <h2>لوحة إحصائيات الإدارة</h2>
+        <div class="stats-grid" id="adminStats"></div>
+
+        <h2>رفع ملف جديد (سحب وإفلات)</h2>
+        <div class="card">
+          <input type="text" id="aT" placeholder="عنوان الكتاب أو البحث">
+          <input type="text" id="aA" placeholder="المؤلف أو الباحث">
+          <input type="text" id="aTags" placeholder="الوسوم (مثال: #طب, #بحث, #مرحلة_أولى)">
+          <select id="aK"><option value="كتاب">كتاب</option><option value="بحث">بحث</option><option value="ملزمة">ملزمة</option></select>
+          
+          <div class="drop-zone" id="adminDropZone">
+            <span>📁 اسحب الملف هنا أو اضغط للاختيار</span>
+            <input type="file" id="aF" accept=".pdf,.epub,.doc,.docx,.txt">
+          </div>
+          
+          <label class="note"><input type="checkbox" id="rights" checked> أؤكد حق مشاركة الملف.</label>
+          <button id="aGo" style="width:100%">رفع للمكتبة العامة</button>
+        </div>
+      </section>
+
+      <div class="stu">
+        <h2>اطلب كتاباً أو بحثاً</h2>
+        <div class="card">
+          <input type="text" id="rT" placeholder="العنوان أو الموضوع المطلوبة">
+          <textarea id="rN" placeholder="اسم المؤلف، الطبعة، ملاحظات إضافية..."></textarea>
+          <button id="rGo" style="width:100%">إرسال الطلب الذكي</button>
+        </div>
+
+        <h2>طلباتي الخاصة والمراسلة <span id="studentBadge"></span></h2>
+        <div id="mine"><div class="empty">لم ترسل أي طلب بعد</div></div>
+      </div>
+    </div>
+
+    <div class="main-pane">
+      <h2>المكتبة العامة والأبحاث</h2>
+      <input type="text" id="q" placeholder="ابحث بالعنوان، المؤلف أو الهاشتاغ (#)...">
+      
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" data-cat="الكل">الكل</button>
+        <button class="filter-btn" data-cat="كتاب">كتب</button>
+        <button class="filter-btn" data-cat="بحث">بحوث</button>
+        <button class="filter-btn" data-cat="ملزمة">ملازم</button>
+        <button class="filter-btn" data-cat="المفضلة">⭐ المفضلة</button>
+      </div>
+
+      <div id="books"><div class="empty">جارٍ التحميل من التخزين غير المحدود...</div></div>
+
+      <section id="inbox" hidden>
+        <h2>إدارة طلبات المستخدمين <span id="adminBadge"></span></h2>
+        <div id="all"><div class="empty">لا توجد طلبات جديدة</div></div>
+      </section>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+const ADMIN_EMAIL = 'aliabobaker44@gmail.com';
+const ADMIN_PASS = '2004.baker';
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const say = m => { $('err').textContent = m || ''; };
+
+let currentCategory = 'الكل';
+let db = null;
+
+// تهيئة IndexedDB للتخزين غير المحدود
+function initIndexedDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('ZLibraryStudioDB', 1);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => { db = request.result; resolve(db); };
+    request.onupgradeneeded = (e) => {
+      const database = e.target.result;
+      if (!database.objectStoreNames.contains('files')) {
+        database.createObjectStore('files', { keyPath: 'id' });
+      }
+    };
+  });
+}
+
+function saveFileBlob(id, blob) {
+  return new Promise((resolve, reject) => {
+    if (!db) return resolve();
+    const tx = db.transaction('files', 'readwrite');
+    const store = tx.objectStore('files');
+    store.put({ id, blob });
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+function getFileBlob(id) {
+  return new Promise((resolve, reject) => {
+    if (!db) return resolve(null);
+    const tx = db.transaction('files', 'readonly');
+    const store = tx.objectStore('files');
+    const req = store.get(id);
+    req.onsuccess = () => resolve(req.result ? req.result.blob : null);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('z_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  $('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+}
+$('themeToggle').onclick = () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('z_theme', next);
+  $('themeToggle').textContent = next === 'dark' ? '☀️' : '🌙';
+};
+initTheme();
+
+function playAlertSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.5);
+  } catch(e) {}
+}
+
+function formatRelativeTime(timestamp) {
+  const diff = Date.now() - timestamp;
+  const mins = Math.floor(diff / 60000);
+  const hours = Math.floor(mins / 60);
+  const days = Math.floor(hours / 24);
+  if (mins < 1) return 'الآن عفوياً';
+  if (mins < 60) return `منذ ${mins} دقيقة`;
+  if (hours < 24) return `منذ ${hours} ساعة`;
+  return `منذ ${days} يوم`;
+}
+
+function initStorage() {
+  let users = JSON.parse(localStorage.getItem('z_users')) || [];
+  let adminFound = users.find(u => u.email === ADMIN_EMAIL);
+  if (adminFound) {
+    adminFound.pass = ADMIN_PASS;
+    adminFound.role = 'admin';
+  } else {
+    users.push({ name: 'مدير الاستوديو', email: ADMIN_EMAIL, pass: ADMIN_PASS, role: 'admin' });
+  }
+  users.forEach(u => { if (u.email !== ADMIN_EMAIL) u.role = 'student'; });
+  localStorage.setItem('z_users', JSON.stringify(users));
+
+  if (!localStorage.getItem('z_books')) localStorage.setItem('z_books', JSON.stringify([]));
+  if (!localStorage.getItem('z_inbox')) localStorage.setItem('z_inbox', JSON.stringify([]));
+  if (!localStorage.getItem('z_favs')) localStorage.setItem('z_favs', JSON.stringify({}));
+}
+
+let currentUser = JSON.parse(sessionStorage.getItem('z_curr_user')) || null;
+
+function saveBooks(data) { localStorage.setItem('z_books', JSON.stringify(data)); }
+function getBooks() { return JSON.parse(localStorage.getItem('z_books')) || []; }
+function saveInbox(data) { localStorage.setItem('z_inbox', JSON.stringify(data)); }
+function getInbox() { return JSON.parse(localStorage.getItem('z_inbox')) || []; }
+
+$('tabLogin').onclick = () => {
+  $('tabLogin').classList.add('active'); $('tabReg').classList.remove('active');
+  $('fLogin').hidden = false; $('fReg').hidden = true; say('');
+};
+$('tabReg').onclick = () => {
+  $('tabReg').classList.add('active'); $('tabLogin').classList.remove('active');
+  $('fReg').hidden = false; $('fLogin').hidden = true; say('');
+};
+
+$('fReg').onsubmit = (e) => {
+  e.preventDefault();
+  const name = $('rName').value.trim(), email = $('rEmail').value.trim().toLowerCase(), pass = $('rPass').value;
+  if (email === ADMIN_EMAIL) { say('هذا البريد مخصص للمدير فقط.'); return; }
+  let users = JSON.parse(localStorage.getItem('z_users')) || [];
+  if (users.find(u => u.email === email)) { say('البريد مسجل مسبقاً'); return; }
+  const newUser = { name, email, pass, role: 'student' };
+  users.push(newUser);
+  localStorage.setItem('z_users', JSON.stringify(users));
+  currentUser = newUser;
+  sessionStorage.setItem('z_curr_user', JSON.stringify(currentUser));
+  say(''); renderApp();
+};
+
+$('fLogin').onsubmit = (e) => {
+  e.preventDefault();
+  const email = $('lEmail').value.trim().toLowerCase(), pass = $('lPass').value;
+  let users = JSON.parse(localStorage.getItem('z_users')) || [];
+  const user = users.find(u => u.email === email && u.pass === pass);
+  if (!user) { say('البريد أو كلمة المرور غير صحيحة'); return; }
+  currentUser = user;
+  sessionStorage.setItem('z_curr_user', JSON.stringify(currentUser));
+  say(''); renderApp();
+};
+
+$('btnLogout').onclick = () => {
+  currentUser = null;
+  sessionStorage.removeItem('z_curr_user');
+  renderApp();
+};
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.onclick = (e) => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    currentCategory = e.target.getAttribute('data-cat');
+    drawBooks();
+  };
+});
+
+function renderApp() {
+  if (!currentUser) {
+    $('authSec').hidden = false; $('appSec').hidden = true;
+    return;
+  }
+  $('authSec').hidden = true; $('appSec').hidden = false;
+  $('uName').textContent = currentUser.name;
+  const isAdmin = currentUser.email === ADMIN_EMAIL;
+  $('uRole').textContent = isAdmin ? 'مدير الاستوديو' : 'طالب';
+  $('admin').hidden = !isAdmin;
+  $('inbox').hidden = !isAdmin;
+  document.querySelectorAll('.stu').forEach(el => el.hidden = isAdmin);
+  drawBooks();
+  if (isAdmin) {
+    drawAllRequests();
+    updateAdminBadge();
+    renderStats();
+  } else {
+    drawMineRequests();
+    updateStudentBadge();
+  }
+}
+
+function renderStats() {
+  const books = getBooks();
+  const users = JSON.parse(localStorage.getItem('z_users')) || [];
+  const inbox = getInbox();
+  let openReqs = 0, doneReqs = 0;
+  inbox.forEach(u => u.items.forEach(i => {
+    if (i.status === 'open') openReqs++;
+    else if (i.status === 'done') doneReqs++;
+  }));
+
+  $('adminStats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${books.length}</div><div class="stat-label">الكتب العامة</div></div>
+    <div class="stat-card"><div class="stat-num">${users.length - 1}</div><div class="stat-label">الطلاب</div></div>
+    <div class="stat-card"><div class="stat-num">${openReqs}</div><div class="stat-label">قيد الانتظار</div></div>
+    <div class="stat-card"><div class="stat-num">${doneReqs}</div><div class="stat-label">مكتملة</div></div>
+  `;
+}
+
+function updateAdminBadge() {
+  const inbox = getInbox();
+  let count = 0;
+  inbox.forEach(u => u.items.forEach(i => { if (i.status === 'open') count++; }));
+  
+  const lastCount = parseInt(sessi
